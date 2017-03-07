@@ -17,13 +17,26 @@ def parseWeather(forecastString):
     matches = re.search(":\s(.*)°.*•\s(.*)•\s*(.*)%", forecastString)
     return matches.group(1).strip(), matches.group(2).strip(), matches.group(3).strip()
 
+# Seperate player data: input e.g. "1. Jace Peterson (L) SS"
+def parsePlayer(playerString):
+    matches = re.search("\.\s*(.*)\s\((.*)\)\s*(.*)", playerString)
+    return matches.group(1).strip(), matches.group(2).strip(), matches.group(3).strip()
+
+
 
 def getLineups():
     saveData = []
 
     for game in games:
         if game.select("div .team-name"):
-            gameData = {"away" : {}, "home": {}}
+            gameData = {
+                "away" : {
+                    "lineup" : []
+                },
+                "home": {
+                    "lineup" : []
+                }
+            }
 
             # Team Names
             gameData["away"]["team"] = game.select("div .team-name")[0].string
@@ -46,9 +59,32 @@ def getLineups():
                 "precipChance" :  precipChance
             }
 
+            # Lineups
+            awayPlayers = game.select(".team-lineup")[0].select_one(".players").select("div")
+            homePlayers = game.select(".team-lineup")[1].select_one(".players").select("div")
+
+            for player in awayPlayers:
+                name, bats, pos = parsePlayer(player.text)
+
+                gameData["away"]["lineup"].append({
+                    "name" : name,
+                    "bats" : bats,
+                    "pos" : pos
+                })
+
+            for player in homePlayers:
+                name, bats, pos = parsePlayer(player.text)
+
+                gameData["home"]["lineup"].append({
+                    "name" : name,
+                    "bats" : bats,
+                    "pos" : pos
+                })
 
             saveData.append(gameData)
 
     return saveData
 
-print(getLineups())
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+pp.pprint(getLineups())
