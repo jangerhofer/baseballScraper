@@ -22,8 +22,6 @@ def parsePlayer(playerString):
     matches = re.search("\.\s*(.*)\s\((.*)\)\s*(.*)", playerString)
     return matches.group(1).strip(), matches.group(2).strip(), matches.group(3).strip()
 
-
-
 def getLineups():
     saveData = []
 
