@@ -82,7 +82,3 @@ def getLineups():
             saveData.append(gameData)
 
     return saveData
-
-import pprint
-pp = pprint.PrettyPrinter(indent=4)
-pp.pprint(getLineups())
